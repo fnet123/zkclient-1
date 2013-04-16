@@ -1,20 +1,25 @@
 package com.dajie.core.zk;
 
+/**
+ * 
+ * @author liyong@dajie-inc.com
+ *
+ */
 public class Message {
 
-    public static final int NODE_CREATED = 1;
+    public static final int NODE_CREATED = 100;
 
-    public static final int NODE_DELETED = 2;
+    public static final int NODE_DELETED = 101;
 
-    public static final int NODE_CHILDREN_CHANGED = 3;
+    public static final int NODE_CHILDREN_CHANGED = 102;
 
-    public static final int NODE_DATA_CHANGED = 4;
+    public static final int NODE_DATA_CHANGED = 103;
+
+    /** refresh all data */
+    public static final int NODE_REFRESH = 104;
 
     /** one message at most can be updated threes times */
     public static final int MAX_UPDATED_COUNT = 3;
-
-    /** refresh all data */
-    public static final int NODE_REFRESH = 5;
 
     private String nodePath;
 

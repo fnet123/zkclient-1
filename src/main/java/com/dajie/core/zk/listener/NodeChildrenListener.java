@@ -2,6 +2,11 @@ package com.dajie.core.zk.listener;
 
 import java.util.List;
 
+/**
+ * 
+ * @author liyong@dajie-inc.com
+ *
+ */
 public abstract class NodeChildrenListener {
 
     private String nodePath = "";

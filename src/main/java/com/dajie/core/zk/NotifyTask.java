@@ -75,7 +75,7 @@ public class NotifyTask implements Runnable {
                     result = zkClient.updateNode(msg.getNodePath());
                     break;
                 case Message.NODE_REFRESH:
-                    result = zkClient.updateAllNodesAndChildren();
+                    zkClient.updateAllNodesAndChildren();
                     break;
                 default:
                     break;
