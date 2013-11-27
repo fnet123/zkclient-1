@@ -1,15 +1,16 @@
-package com.dajie.core.zk;
+package sirius.zkclient;
 
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.LinkedBlockingDeque;
 
 import org.apache.log4j.Logger;
 
-import com.dajie.core.zk.util.ZkLogger;
+import sirius.zkclient.util.ZkLogger;
+
 
 /**
  * 
- * @author yong.li@dajie-inc.com
+ * @author liyong19861014@gmail.com
  * 
  */
 public class NotifyTask implements Runnable {

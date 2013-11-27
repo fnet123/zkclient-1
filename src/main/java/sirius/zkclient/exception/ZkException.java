@@ -1,8 +1,8 @@
-package com.dajie.core.zk.exception;
+package sirius.zkclient.exception;
 
 /**
  * 
- * @author yong.li@dajie-inc.com
+ * @author liyong19861014@gmail.com
  * 
  */
 public class ZkException extends Exception {

@@ -1,4 +1,4 @@
-package com.dajie.core.zk;
+package sirius.zkclient;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,14 +18,15 @@ import org.apache.zookeeper.ZooDefs.Ids;
 import org.apache.zookeeper.ZooKeeper;
 import org.apache.zookeeper.data.Stat;
 
-import com.dajie.core.zk.exception.ZkException;
-import com.dajie.core.zk.listener.NodeChildrenListener;
-import com.dajie.core.zk.listener.NodeDataListener;
-import com.dajie.core.zk.util.ZkLogger;
+import sirius.zkclient.exception.ZkException;
+import sirius.zkclient.listener.NodeChildrenListener;
+import sirius.zkclient.listener.NodeDataListener;
+import sirius.zkclient.util.ZkLogger;
+
 
 /**
  * 
- * @author liyong@dajie-inc.com
+ * @author liyong19861014@gmail.com
  *
  */
 public class ZkClient {

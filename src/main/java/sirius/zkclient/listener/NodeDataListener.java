@@ -1,8 +1,8 @@
-package com.dajie.core.zk.listener;
+package sirius.zkclient.listener;
 
 /**
  * 
- * @author liyong@dajie-inc.com
+ * @author liyong19861014@gmail.com
  *
  */
 public abstract class NodeDataListener {

@@ -4,8 +4,8 @@
 
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>com.dajie</groupId>
-	<artifactId>dj-dbaccess</artifactId>
+	<groupId>sirius</groupId>
+	<artifactId>zkclient</artifactId>
 	<packaging>jar</packaging>
 	<version>1.0-SNAPSHOT</version>
 	<name>dajie-zkclient</name>

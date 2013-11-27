@@ -1,9 +1,9 @@
-package com.dajie.core.zk.util;
+package sirius.zkclient.util;
 
 /**
  * 标识类，在log4j.xml中配置
  * 
- * @author yong.li@dajie-inc.com
+ * @author liyong19861014@gmail.com
  * 
  */
 public interface ZkLogger {
