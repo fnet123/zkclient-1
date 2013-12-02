@@ -23,11 +23,10 @@ import sirius.zkclient.listener.NodeChildrenListener;
 import sirius.zkclient.listener.NodeDataListener;
 import sirius.zkclient.util.ZkLogger;
 
-
 /**
  * 
  * @author liyong19861014@gmail.com
- *
+ * 
  */
 public class ZkClient {
 
@@ -63,7 +62,7 @@ public class ZkClient {
 
     /** zk resource done */
 
-    private ZkClient(String zkAddr) {
+    public ZkClient(String zkAddr) {
         this.zkAddress = zkAddr;
         childrenListeners = new HashMap<String, List<NodeChildrenListener>>();
         childrenRWLock = new ReentrantReadWriteLock();
@@ -178,7 +177,7 @@ public class ZkClient {
     boolean updateNode(String nodePath) {
         String newValue = null;
         try {
-            newValue = getData(nodePath);
+            newValue = getData(nodePath, true);
         } catch (ZkException e) {
             logger.error(e);
         }
@@ -234,7 +233,7 @@ public class ZkClient {
     boolean updateChildren(String parentNodePath) {
         List<String> newChildren = null;
         try {
-            newChildren = getChildren(parentNodePath);
+            newChildren = getChildren(parentNodePath, true);
         } catch (ZkException e) {
             logger.error("ZkClient.updateChildren() parentNodePath:" + parentNodePath, e);
         }
@@ -287,14 +286,15 @@ public class ZkClient {
     }
 
     /**
-     * read
+     * getData
      * 
      * @param path
+     * @param watch
      * @return
      * @throws ZkException
      */
-    public String getData(String path) throws ZkException {
-        if (!exist(path)) {
+    public String getData(String path, boolean watch) throws ZkException {
+        if (!exist(path, false)) {
             return null;
         }
         String value = null;
@@ -302,7 +302,7 @@ public class ZkClient {
             Stat stat = new Stat();
             byte[] data = null;
             try {
-                data = zk.getData(path, true, stat);
+                data = zk.getData(path, watch, stat);
                 logger.debug("stat: " + stat);
             } catch (Exception e) {
                 logger.error("ZkClient.getData() path: " + path, e);
@@ -319,13 +319,14 @@ public class ZkClient {
      * exist
      * 
      * @param path
+     * @param watch
      * @return
      * @throws ZkException
      */
-    public boolean exist(String path) throws ZkException {
+    public boolean exist(String path, boolean watch) throws ZkException {
         synchronized (watcher) {
             try {
-                Stat stat = zk.exists(path, true);
+                Stat stat = zk.exists(path, watch);
                 if (stat != null) {
                     return true;
                 }
@@ -341,17 +342,18 @@ public class ZkClient {
      * getChildren
      * 
      * @param path
+     * @param watch
      * @return
      * @throws ZkException
      */
-    public List<String> getChildren(String path) throws ZkException {
-        if (!exist(path)) {
+    public List<String> getChildren(String path, boolean watch) throws ZkException {
+        if (!exist(path, false)) {
             return null;
         }
         List<String> children = null;
         synchronized (watcher) {
             try {
-                children = zk.getChildren(path, true);
+                children = zk.getChildren(path, watch);
             } catch (Exception e) {
                 logger.error("ZkClient.getChildren() path: " + path, e);
                 throw new ZkException(e);
@@ -360,8 +362,8 @@ public class ZkClient {
         return children;
     }
 
-    // TODO: deleteNode method???  let me think about it for some while!!!
-    // TODO: deleteAllChildren method???  let me think about it for some while!!!
+    // TODO: deleteNode method??? let me think about it for some while!!!
+    // TODO: deleteAllChildren method??? let me think about it for some while!!!
 
     /**
      * 
@@ -428,7 +430,7 @@ public class ZkClient {
         if ("".equals(data)) {
             return false;
         }
-        if (!exist(path)) {
+        if (!exist(path, false)) {
             return false;
         }
         synchronized (watcher) {
@@ -468,7 +470,7 @@ public class ZkClient {
                                 this.notifyAll();
                             }
                             if (!first) {
-                                // after last session Expired, new zk started! 
+                                // after last session Expired, new zk started!
                                 notifyTask.addMessage(new Message("", Message.NODE_REFRESH));
                                 logger.debug("new zk started!");
                             }
@@ -497,7 +499,7 @@ public class ZkClient {
                     if (!path.isEmpty()) {
                         notifyTask.addMessage(new Message(path, Message.NODE_CHILDREN_CHANGED));
                         try {
-                            exist(path);
+                            exist(path, true);
                         } catch (ZkException e) {
                             logger.error(e);
                         }
@@ -507,7 +509,7 @@ public class ZkClient {
                     if (!path.isEmpty()) {
                         notifyTask.addMessage(new Message(path, Message.NODE_DELETED));
                         try {
-                            exist(path);
+                            exist(path, true);
                         } catch (ZkException e) {
                             logger.error(e);
                         }
@@ -517,7 +519,7 @@ public class ZkClient {
                     if (!path.isEmpty()) {
                         notifyTask.addMessage(new Message(path, Message.NODE_CREATED));
                         try {
-                            exist(path);
+                            exist(path, true);
                         } catch (ZkException e) {
                             logger.error(e);
                         }
@@ -527,7 +529,7 @@ public class ZkClient {
                     if (!path.isEmpty()) {
                         notifyTask.addMessage(new Message(path, Message.NODE_DATA_CHANGED));
                         try {
-                            exist(path);
+                            exist(path, true);
                         } catch (ZkException e) {
                             logger.error(e);
                         }
@@ -562,12 +564,13 @@ public class ZkClient {
 
             @Override
             public boolean delete() {
+                System.out.println("nodePath:" + getNodePath() + " is deleted!");
                 return true;
             }
         });
         try {
-            System.out.println(client.getChildren("/test3"));
-            System.out.println(client.getData("/test4"));
+            System.out.println(client.getChildren("/test3", true));
+            System.out.println(client.getData("/test4", true));
             TimeUnit.MINUTES.sleep(10);
         } catch (Exception e) {
             e.printStackTrace();

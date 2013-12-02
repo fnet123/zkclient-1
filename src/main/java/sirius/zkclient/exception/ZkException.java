@@ -2,8 +2,8 @@ package sirius.zkclient.exception;
 
 /**
  * 
- * @author liyong19861014@gmail.com
- * 
+ * @author michael
+ * @email liyong19861014@gmail.com
  */
 public class ZkException extends Exception {
 

@@ -7,7 +7,6 @@ import org.apache.log4j.Logger;
 
 import sirius.zkclient.util.ZkLogger;
 
-
 /**
  * 
  * @author liyong19861014@gmail.com
@@ -57,8 +56,7 @@ public class NotifyTask implements Runnable {
                 continue;
             }
             if (msg.getUpdatedCount() >= Message.MAX_UPDATED_COUNT) {
-                logger.warn("message cannot be updated, nodePath:"
-                        + msg.getNodePath());
+                logger.warn("message cannot be updated, nodePath:" + msg.getNodePath());
                 continue;
             }
             boolean result = true;

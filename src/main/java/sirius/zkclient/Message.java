@@ -3,7 +3,7 @@ package sirius.zkclient;
 /**
  * 
  * @author liyong19861014@gmail.com
- *
+ * 
  */
 public class Message {
 

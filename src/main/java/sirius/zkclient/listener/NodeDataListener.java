@@ -3,7 +3,7 @@ package sirius.zkclient.listener;
 /**
  * 
  * @author liyong19861014@gmail.com
- *
+ * 
  */
 public abstract class NodeDataListener {
 
@@ -14,12 +14,12 @@ public abstract class NodeDataListener {
             this.nodePath = nodePath;
         }
     }
-    
+
     public String getNodePath() {
         return nodePath;
     }
 
     public abstract boolean update(String value);
-    
+
     public abstract boolean delete();
 }
