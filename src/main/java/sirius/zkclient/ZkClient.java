@@ -61,8 +61,28 @@ public class ZkClient {
     private Thread notifyThread;
 
     /** zk resource done */
+    
+    private static final Map<String, ZkClient> map = new HashMap<String, ZkClient>();
 
-    public ZkClient(String zkAddr) {
+    public static ZkClient getInstance(String zkAddress) {
+        ZkClient client = null;
+        synchronized (ZkClient.class) {
+            client = map.get(zkAddress);
+            if (client != null) {
+                return client;
+            } else {
+                try {
+                    client = new ZkClient(zkAddress);
+                    map.put(zkAddress, client);
+                } catch (Exception e) {
+                    logger.error("failed to new ZkClient zkAddress: " + zkAddress, e);
+                }
+            }
+        }
+        return client;
+    }
+
+    private ZkClient(String zkAddr) {
         this.zkAddress = zkAddr;
         childrenListeners = new HashMap<String, List<NodeChildrenListener>>();
         childrenRWLock = new ReentrantReadWriteLock();
