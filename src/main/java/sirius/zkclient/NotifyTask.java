@@ -30,7 +30,6 @@ public class NotifyTask implements Runnable {
     }
 
     /**
-     * 异步实现此方法
      * 
      * @param nodePath
      */

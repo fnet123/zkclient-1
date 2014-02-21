@@ -4,10 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.WatchedEvent;
@@ -24,6 +22,10 @@ import sirius.zkclient.listener.NodeDataListener;
 import sirius.zkclient.util.ZkLogger;
 
 /**
+ * 客户端使用的类
+ * 
+ * 
+ * TODO:支持ACL
  * 
  * @author liyong19861014@gmail.com
  * 
@@ -105,6 +107,7 @@ public class ZkClient {
         notifyTask = new NotifyTask();
         notifyTask.setZkClient(this);
         notifyThread = new Thread(notifyTask);
+        notifyThread.setName("NotifyTaskThread");
         notifyThread.setDaemon(true);
         notifyThread.start();
     }
@@ -494,7 +497,7 @@ public class ZkClient {
                             }
                             if (!first) {
                                 // after last session Expired, new zk started!
-                                notifyTask.addMessage(new Message("", Message.NODE_REFRESH));
+                                notifyTask.addMessage(new Message("", Message.NODE_REFRESH)); //This is holy shit, and we should refresh all listeners!
                                 logger.debug("new zk started!");
                             }
                             return;
@@ -562,42 +565,5 @@ public class ZkClient {
                     break;
             }
         }
-    }
-
-    public static void main(String[] args) {
-        BasicConfigurator.configure();
-        String zkAddress = "127.0.0.1:2181";
-        ZkClient client = new ZkClient(zkAddress);
-        client.addNodeChildrenListener(new NodeChildrenListener("/test3") {
-
-            @Override
-            public boolean update(List<String> childrenNameList) {
-                System.out.println("nodePath:" + getNodePath() + ", childrenNameList: "
-                        + childrenNameList);
-                return true;
-            }
-        });
-        client.addNodeDataListener(new NodeDataListener("/test4") {
-
-            @Override
-            public boolean update(String value) {
-                System.out.println("nodePath: " + getNodePath() + ", value: " + value);
-                return true;
-            }
-
-            @Override
-            public boolean delete() {
-                System.out.println("nodePath:" + getNodePath() + " is deleted!");
-                return true;
-            }
-        });
-        try {
-            System.out.println(client.getChildren("/test3", true));
-            System.out.println(client.getData("/test4", true));
-            TimeUnit.MINUTES.sleep(10);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        client.close();
     }
 }
