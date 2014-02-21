@@ -61,7 +61,7 @@ public class ZkClient {
     private Thread notifyThread;
 
     /** zk resource done */
-    
+
     private static final Map<String, ZkClient> map = new HashMap<String, ZkClient>();
 
     public static ZkClient getInstance(String zkAddress) {
@@ -212,6 +212,7 @@ public class ZkClient {
             if (listeners != null) {
                 for (NodeDataListener listener : listeners) {
                     res = listener.update(newValue);
+                    // TODO: Reconsider not to break;
                     if (!res) {
                         break;
                     }
@@ -235,6 +236,7 @@ public class ZkClient {
             if (listeners != null) {
                 for (NodeDataListener listener : listeners) {
                     res = listener.delete();
+                    // TODO: Reconsider not to break;
                     if (!res) {
                         break;
                     }
@@ -269,6 +271,7 @@ public class ZkClient {
             if (listeners != null) {
                 for (NodeChildrenListener listener : listeners) {
                     res = listener.update(newChildren);
+                    // TODO: Reconsider not to break;
                     if (!res) {
                         break;
                     }
