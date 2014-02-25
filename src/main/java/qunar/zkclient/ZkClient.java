@@ -1,4 +1,4 @@
-package sirius.zkclient;
+package qunar.zkclient;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import org.apache.log4j.Logger;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
@@ -15,11 +14,13 @@ import org.apache.zookeeper.Watcher.Event.KeeperState;
 import org.apache.zookeeper.ZooDefs.Ids;
 import org.apache.zookeeper.ZooKeeper;
 import org.apache.zookeeper.data.Stat;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import sirius.zkclient.exception.ZkException;
-import sirius.zkclient.listener.NodeChildrenListener;
-import sirius.zkclient.listener.NodeDataListener;
-import sirius.zkclient.util.ZkLogger;
+import qunar.zkclient.exception.ZkException;
+import qunar.zkclient.listener.NodeChildrenListener;
+import qunar.zkclient.listener.NodeDataListener;
+import qunar.zkclient.util.ZkLogger;
 
 /**
  * 客户端使用的类
@@ -32,7 +33,7 @@ import sirius.zkclient.util.ZkLogger;
  */
 public class ZkClient {
 
-    private static final Logger logger = Logger.getLogger(ZkLogger.class);
+    private static final Logger logger = LoggerFactory.getLogger(ZkLogger.class);
 
     // zk session timeout
     private static final int SESSION_TIMEOUT = 5000;
@@ -100,7 +101,7 @@ public class ZkClient {
                 zk = new ZooKeeper(zkAddress, SESSION_TIMEOUT, watcher);
                 watcher.wait();
             } catch (Exception e) {
-                logger.error(e);
+                logger.error(e.getMessage(), e);
             }
         }
 
@@ -202,7 +203,7 @@ public class ZkClient {
         try {
             newValue = getData(nodePath, true);
         } catch (ZkException e) {
-            logger.error(e);
+            logger.error(e.getMessage(), e);
         }
         if (newValue == null) {
             logger.debug("ZkClient.updatNode() path: " + nodePath + ", newValue == null");
@@ -527,7 +528,7 @@ public class ZkClient {
                         try {
                             exist(path, true);
                         } catch (ZkException e) {
-                            logger.error(e);
+                            logger.error(e.getMessage(), e);
                         }
                     }
                     break;
@@ -537,7 +538,7 @@ public class ZkClient {
                         try {
                             exist(path, true);
                         } catch (ZkException e) {
-                            logger.error(e);
+                            logger.error(e.getMessage(), e);
                         }
                     }
                     break;
@@ -547,7 +548,7 @@ public class ZkClient {
                         try {
                             exist(path, true);
                         } catch (ZkException e) {
-                            logger.error(e);
+                            logger.error(e.getMessage(), e);
                         }
                     }
                     break;
@@ -557,7 +558,7 @@ public class ZkClient {
                         try {
                             exist(path, true);
                         } catch (ZkException e) {
-                            logger.error(e);
+                            logger.error(e.getMessage(), e);
                         }
                     }
                     break;

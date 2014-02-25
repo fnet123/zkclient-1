@@ -1,4 +1,4 @@
-package sirius.zkclient.util;
+package qunar.zkclient.util;
 
 /**
  * 标识类，在log4j.xml中配置

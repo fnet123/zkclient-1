@@ -1,4 +1,4 @@
-package sirius.zkclient.exception;
+package qunar.zkclient.exception;
 
 /**
  * 

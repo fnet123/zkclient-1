@@ -1,11 +1,12 @@
-package sirius.zkclient;
+package qunar.zkclient;
 
-import java.util.concurrent.BlockingDeque;
-import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import sirius.zkclient.util.ZkLogger;
+import qunar.zkclient.util.ZkLogger;
 
 /**
  * 
@@ -14,15 +15,15 @@ import sirius.zkclient.util.ZkLogger;
  */
 public class NotifyTask implements Runnable {
 
-    private static Logger logger = Logger.getLogger(ZkLogger.class);
+    private static Logger logger = LoggerFactory.getLogger(ZkLogger.class);
 
     private ZkClient zkClient;
 
-    private BlockingDeque<Message> messages;
+    private BlockingQueue<Message> messages;
 
     public NotifyTask() {
         this.zkClient = null;
-        this.messages = new LinkedBlockingDeque<Message>();
+        this.messages = new LinkedBlockingQueue<Message>();
     }
 
     public void setZkClient(ZkClient zkClient) {
@@ -37,17 +38,17 @@ public class NotifyTask implements Runnable {
         try {
             messages.put(msg);
         } catch (InterruptedException e) {
-            logger.error(e);
+            logger.error(e.getMessage(), e);
         }
     }
 
-    public void run() {
+    private void process() {
         while (true) {
             Message msg = null;
             try {
                 msg = messages.take();
             } catch (InterruptedException e) {
-                logger.error(e);
+                logger.error(e.getMessage(), e);
                 continue;
             }
             if (zkClient == null) {
@@ -80,8 +81,20 @@ public class NotifyTask implements Runnable {
             }
             if (!result) { // if update failed, put msg into messages
                 msg.incUpdatedCount();
-                messages.push(msg);
+                try {
+                    messages.put(msg);
+                } catch (InterruptedException e) {
+                    //                    e.printStackTrace();
+                }
             }
+        }
+    }
+
+    public void run() {
+        try {
+            process();
+        } catch (Throwable e) {
+            logger.error(e.getMessage(), e);
         }
     }
 
