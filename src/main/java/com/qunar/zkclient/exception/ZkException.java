@@ -1,4 +1,4 @@
-package qunar.zkclient.exception;
+package com.qunar.zkclient.exception;
 
 /**
  * 

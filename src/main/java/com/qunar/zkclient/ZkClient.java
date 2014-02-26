@@ -1,4 +1,4 @@
-package qunar.zkclient;
+package com.qunar.zkclient;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,10 +17,11 @@ import org.apache.zookeeper.data.Stat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import qunar.zkclient.exception.ZkException;
-import qunar.zkclient.listener.NodeChildrenListener;
-import qunar.zkclient.listener.NodeDataListener;
-import qunar.zkclient.util.ZkLogger;
+import com.qunar.zkclient.exception.ZkException;
+import com.qunar.zkclient.listener.NodeChildrenListener;
+import com.qunar.zkclient.listener.NodeDataListener;
+import com.qunar.zkclient.util.ZkLogger;
+
 
 /**
  * 客户端使用的类

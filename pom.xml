@@ -10,11 +10,11 @@
 		<version>1.3.2</version>
 	</parent>
 
-	<groupId>qunar</groupId>
+	<groupId>com.qunar</groupId>
 	<artifactId>zkclient</artifactId>
 	<packaging>jar</packaging>
 	<version>1.0-SNAPSHOT</version>
-	<name>dajie-zkclient</name>
+	<name>zkclient</name>
 	<developers>
 		<developer>
 			<name>yong.li</name>

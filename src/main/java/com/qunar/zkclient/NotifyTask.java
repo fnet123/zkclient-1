@@ -1,4 +1,4 @@
-package qunar.zkclient;
+package com.qunar.zkclient;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -6,7 +6,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import qunar.zkclient.util.ZkLogger;
+import com.qunar.zkclient.util.ZkLogger;
+
 
 /**
  * 

@@ -1,4 +1,4 @@
-package qunar.zkclient;
+package com.qunar.zkclient;
 
 /**
  * 
