@@ -22,7 +22,6 @@ import com.qunar.zkclient.listener.NodeChildrenListener;
 import com.qunar.zkclient.listener.NodeDataListener;
 import com.qunar.zkclient.util.ZkLogger;
 
-
 /**
  * 客户端使用的类
  * 
@@ -484,7 +483,7 @@ public class ZkClient {
 
         public void process(WatchedEvent event) {
 
-            System.out.println("event:" + event);
+            logger.info("event:" + event);
 
             EventType eventType = event.getType();
             KeeperState state = event.getState();
