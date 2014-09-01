@@ -53,7 +53,7 @@ public class ZkClient {
     /** zk resource start */
 
     /** watcher and zk lock */
-    private Watcher watcher;
+    private ZkWatcher watcher;
 
     private String zkAddress;
 
@@ -111,6 +111,20 @@ public class ZkClient {
         notifyThread.setName("NotifyTaskThread");
         notifyThread.setDaemon(true);
         notifyThread.start();
+    }
+
+    private boolean reopenZkConnection() {
+        synchronized (watcher) {
+            try {
+                watcher.setFirst(false);
+                zk = new ZooKeeper(zkAddress, SESSION_TIMEOUT, watcher);
+                watcher.wait();
+                return true;
+            } catch (Exception e) {
+                logger.error(e.getMessage(), e);
+            }
+        }
+        return false;
     }
 
     public void close() {
@@ -331,7 +345,11 @@ public class ZkClient {
             try {
                 data = zk.getData(path, watch, stat);
                 logger.debug("stat: " + stat);
-            } catch (Exception e) {
+            } /*catch (ConnectionLossException e) {
+                logger.error("ZkClient.getData() path: " + path, e);
+                this.reopenZkConnection();
+              } */
+            catch (Exception e) {
                 logger.error("ZkClient.getData() path: " + path, e);
                 throw new ZkException(e);
             }
@@ -357,7 +375,11 @@ public class ZkClient {
                 if (stat != null) {
                     return true;
                 }
-            } catch (Exception e) {
+            } /*catch (ConnectionLossException e) {
+                logger.error("ZkClient.exist() path: " + path, e);
+                this.reopenZkConnection();
+              } */
+            catch (Exception e) {
                 logger.error("ZkClient.exist() path: " + path, e);
                 throw new ZkException(e);
             }
@@ -381,7 +403,11 @@ public class ZkClient {
         synchronized (watcher) {
             try {
                 children = zk.getChildren(path, watch);
-            } catch (Exception e) {
+            }/* catch (ConnectionLossException e) {
+                logger.error("ZkClient.getChildren() path: " + path, e);
+                this.reopenZkConnection();
+             } */
+            catch (Exception e) {
                 logger.error("ZkClient.getChildren() path: " + path, e);
                 throw new ZkException(e);
             }
@@ -410,7 +436,12 @@ public class ZkClient {
             try {
                 zk.create(path, data.getBytes(), Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL);
                 return true;
-            } catch (Exception e) {
+            }/* catch (ConnectionLossException e) {
+                logger.error("ZkClient.createEphemeralNode() path: " + path, e);
+                this.reopenZkConnection();
+                throw new ZkException(e);
+             } */
+            catch (Exception e) {
                 logger.error("ZkClient.createEphemeralNode() path: " + path + ", data: " + data, e);
                 throw new ZkException(e);
             }
@@ -436,7 +467,12 @@ public class ZkClient {
             try {
                 zk.create(path, data.getBytes(), Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
                 return true;
-            } catch (Exception e) {
+            }/* catch (ConnectionLossException e) {
+                logger.error("ZkClient.createPersistentNode() path: " + path, e);
+                this.reopenZkConnection();
+                throw new ZkException(e);
+             } */
+            catch (Exception e) {
                 logger.error("ZkClient.createPersistentNode() path: " + path + ", data: " + data, e);
                 throw new ZkException(e);
             }
@@ -465,7 +501,12 @@ public class ZkClient {
                 Stat stat = zk.setData(path, data.getBytes(), -1);
                 logger.debug("ZkClient.setData() stat:" + stat);
                 return true;
-            } catch (Exception e) {
+            }/* catch (ConnectionLossException e) {
+                logger.error("ZkClient.setData() path: " + path, e);
+                this.reopenZkConnection();
+                throw new ZkException(e);
+             } */
+            catch (Exception e) {
                 logger.error("ZkClient.setData() path: " + path + ", data: " + data, e);
                 throw new ZkException(e);
             }
@@ -478,6 +519,10 @@ public class ZkClient {
         private boolean first;
 
         ZkWatcher(boolean first) {
+            this.first = first;
+        }
+
+        public void setFirst(boolean first) {
             this.first = first;
         }
 
@@ -505,18 +550,10 @@ public class ZkClient {
                         case Disconnected:
                             break;
                         case Expired:
-                            while (true) {
+                            boolean exit = false;
+                            while (!exit) {
                                 closeZkConnection();
-                                watcher = new ZkWatcher(false);
-                                synchronized (watcher) {
-                                    try {
-                                        zk = new ZooKeeper(zkAddress, SESSION_TIMEOUT, watcher);
-                                        watcher.wait();
-                                        break;
-                                    } catch (Exception e) {
-                                        logger.error("ZkWatcher.process() Session Expired!", e);
-                                    }
-                                }
+                                exit = reopenZkConnection();
                             }
                         default:
                             break;
@@ -567,4 +604,62 @@ public class ZkClient {
             }
         }
     }
+
+    /*
+    public static void main(String[] args) {
+        BasicConfigurator.configure();
+        final ZkClient zc = ZkClient.getInstance("127.0.0.1:2181");
+        zc.addNodeDataListener(new NodeDataListener("/test") {
+
+            @Override
+            public boolean update(String value) {
+                logger.debug("============ path: /test newvalue: " + value);
+                return true;
+            }
+
+            @Override
+            public boolean delete() {
+                return true;
+            }
+        });
+        try {
+            TimeUnit.SECONDS.sleep(1);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        Runnable r = new Runnable() {
+
+            @Override
+            public void run() {
+                try {
+                    for (int i = 0; i < 10000; ++i) {
+                        try {
+                            TimeUnit.MILLISECONDS.sleep(1000);
+                            String val = zc.getData("/test", false);
+                            logger.debug("val: " + val);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                } catch (Exception e) {
+                    logger.debug(e.toString());
+                }
+            }
+        };
+        Thread thread = new Thread(r);
+        thread.start();
+        try {
+            TimeUnit.MILLISECONDS.sleep(1000);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        try {
+            thread.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+    */
 }
