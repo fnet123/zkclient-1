@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.apache.zookeeper.CreateMode;
+import org.apache.zookeeper.KeeperException.ConnectionLossException;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.Watcher.Event.EventType;
@@ -345,11 +346,11 @@ public class ZkClient {
             try {
                 data = zk.getData(path, watch, stat);
                 logger.debug("stat: " + stat);
-            } /*catch (ConnectionLossException e) {
+            } catch (ConnectionLossException e) {
                 logger.error("ZkClient.getData() path: " + path, e);
                 this.reopenZkConnection();
-              } */
-            catch (Exception e) {
+                throw new ZkException(e);
+            } catch (Exception e) {
                 logger.error("ZkClient.getData() path: " + path, e);
                 throw new ZkException(e);
             }
@@ -375,11 +376,11 @@ public class ZkClient {
                 if (stat != null) {
                     return true;
                 }
-            } /*catch (ConnectionLossException e) {
+            } catch (ConnectionLossException e) {
                 logger.error("ZkClient.exist() path: " + path, e);
                 this.reopenZkConnection();
-              } */
-            catch (Exception e) {
+                throw new ZkException(e);
+            } catch (Exception e) {
                 logger.error("ZkClient.exist() path: " + path, e);
                 throw new ZkException(e);
             }
@@ -403,11 +404,11 @@ public class ZkClient {
         synchronized (watcher) {
             try {
                 children = zk.getChildren(path, watch);
-            }/* catch (ConnectionLossException e) {
+            } catch (ConnectionLossException e) {
                 logger.error("ZkClient.getChildren() path: " + path, e);
                 this.reopenZkConnection();
-             } */
-            catch (Exception e) {
+                throw new ZkException(e);
+            } catch (Exception e) {
                 logger.error("ZkClient.getChildren() path: " + path, e);
                 throw new ZkException(e);
             }
@@ -436,12 +437,11 @@ public class ZkClient {
             try {
                 zk.create(path, data.getBytes(), Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL);
                 return true;
-            }/* catch (ConnectionLossException e) {
+            } catch (ConnectionLossException e) {
                 logger.error("ZkClient.createEphemeralNode() path: " + path, e);
                 this.reopenZkConnection();
                 throw new ZkException(e);
-             } */
-            catch (Exception e) {
+            } catch (Exception e) {
                 logger.error("ZkClient.createEphemeralNode() path: " + path + ", data: " + data, e);
                 throw new ZkException(e);
             }
@@ -467,12 +467,11 @@ public class ZkClient {
             try {
                 zk.create(path, data.getBytes(), Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
                 return true;
-            }/* catch (ConnectionLossException e) {
+            } catch (ConnectionLossException e) {
                 logger.error("ZkClient.createPersistentNode() path: " + path, e);
                 this.reopenZkConnection();
                 throw new ZkException(e);
-             } */
-            catch (Exception e) {
+            } catch (Exception e) {
                 logger.error("ZkClient.createPersistentNode() path: " + path + ", data: " + data, e);
                 throw new ZkException(e);
             }
@@ -501,12 +500,11 @@ public class ZkClient {
                 Stat stat = zk.setData(path, data.getBytes(), -1);
                 logger.debug("ZkClient.setData() stat:" + stat);
                 return true;
-            }/* catch (ConnectionLossException e) {
+            } catch (ConnectionLossException e) {
                 logger.error("ZkClient.setData() path: " + path, e);
                 this.reopenZkConnection();
                 throw new ZkException(e);
-             } */
-            catch (Exception e) {
+            } catch (Exception e) {
                 logger.error("ZkClient.setData() path: " + path + ", data: " + data, e);
                 throw new ZkException(e);
             }
